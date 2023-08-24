@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UiHelperScript : MonoBehaviour
+public class UiFigmaHelperScript : MonoBehaviour
 {
     [Tooltip("If Empty It will be set as the Canvas or Transform by default")]
     [Header("Set Canvas or a UI object as the parent")]
