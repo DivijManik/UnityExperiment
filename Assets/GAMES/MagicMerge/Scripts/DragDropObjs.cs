@@ -10,6 +10,8 @@ public class DragDropObjs : MonoBehaviour
     [SerializeField]
     LayerMask mask;
 
+    bool OnGround = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,8 +47,17 @@ public class DragDropObjs : MonoBehaviour
 
         if(Input.GetMouseButtonUp(0))
         {
-            CurrentDraggableObj.UseGridPos();
-            CurrentDraggableObj = null;
+            if (!OnGround)
+            {
+                CurrentDraggableObj.UseLastPos();
+                CurrentDraggableObj = null;
+                //return;
+            }
+            else
+            {
+                CurrentDraggableObj.UseGridPos();
+                CurrentDraggableObj = null;
+            }
         }
 
         if(CurrentDraggableObj != null && Input.GetMouseButton(0))
@@ -56,6 +67,14 @@ public class DragDropObjs : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 1000f,mask))
             {
+                if(hit.transform.CompareTag("Background"))
+                {
+                    OnGround = false;
+                }
+                else
+                {
+                    OnGround = true;
+                }
                 CurrentDraggableObj.transform.position = hit.point + new Vector3(0,0.5f,0);             
             }
         }

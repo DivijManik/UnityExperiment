@@ -22,15 +22,21 @@ public class MergeObj : MonoBehaviour
         {
             Vector3 newPos = new Vector3(Mathf.RoundToInt(transform.position.x), 0.5f, Mathf.RoundToInt(transform.position.z));
 
-            CheckNearbyObjectsCount(newPos);
             transform.DOMoveX(Mathf.RoundToInt(transform.position.x), 1f);
             transform.DOMoveZ(Mathf.RoundToInt(transform.position.z), 1f);
             LastPos = newPos;
+
+            CheckNearbyObjectsCount(newPos);
+
         }
         else
         {
             transform.DOMove(LastPos, 1f);
         }
+    }
+    public void UseLastPos()
+    {
+        transform.DOMove(LastPos, 1f);
     }
 
     public void EndGridMove()
@@ -49,9 +55,12 @@ public class MergeObj : MonoBehaviour
             foreach (var item in mergeableObjs)
             {
                 if (item != this)
-                    Destroy(item.gameObject);
+                {
+                    item.EndGridMove();
+                    item.transform.DOMove(transform.position, 1f).OnComplete(() => { Destroy(item.gameObject); });
+                }
             }
-            UpgradeItem();
+            StartCoroutine(UpgradeItem());
         } 
     }
 
@@ -66,15 +75,23 @@ public class MergeObj : MonoBehaviour
             foreach (var item in mergeableObjs)
             {
                 if (item != this)
-                    Destroy(item.gameObject);
+                {
+                    item.EndGridMove();
+                    item.transform.DOMove(transform.position, 1f).OnComplete(() => { Destroy(item.gameObject); });                    
+                }
             }
-            UpgradeItem();
+            StartCoroutine(UpgradeItem());
         }
     }
 
-    public void UpgradeItem()
+    IEnumerator UpgradeItem()
     {
+        yield return new WaitForSeconds(1f);
         Debug.Log("Item Upgraded");
+        GridData.Instance.AddToMergeObjs(this);
+
+        // ^ this is the upgraded item
+        // we can also destroy this here and before that instantiate a level 2 prefab
     }
 }
 
